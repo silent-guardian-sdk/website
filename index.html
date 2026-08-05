@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Silent Guardian</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --off-white: #F8F7F2;
+            --who-blue: #009EDB;
+            --who-blue-dk: #006E9E;
+            --primary-green: #085041;
+            --markaz-green: #0F6E56;
+            --dark-grey: #2C2C2A;
+            --coral-problem: #D85A30;
+            --amber-stat: #EF9F27;
+            --card-light-bg: rgba(255, 255, 255, 0.95);
+            --card-dark-bg: rgba(44, 44, 42, 0.96);
+            /* Refined snappier organic deceleration curve */
+            --ease-organic: cubic-bezier(0.16, 1, 0.3, 1);
+            --transition-speed: 0.5s;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Anti-aliasing and subpixel layout stabilization */
+        html, body {
+            height: 100%;
+            overflow: hidden;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
+        }
+
+        body {
+            background-color: var(--off-white);
+            color: var(--dark-grey);
+            font-family: 'Inter', sans-serif;
+            line-height: 1.5;
+            transition: background-color 0.5s var(--ease-organic);
+            transform-style: preserve-3d;
+        }
+
+        /* Synced Solid Base States to support dynamic address bar scaling on mobile */
+        body.active-slide-1 { background-color: #13171B; }
+        body.active-slide-2 { background-color: #FAF9F5; }
+        body.active-slide-3 { background-color: #F0F4F8; }
+        body.active-slide-4 { background-color: #101513; }
+        body.active-slide-5 { background-color: #13171B; }
+        body.active-slide-6 { background-color: #F4F8F5; }
+        body.active-slide-7 { background-color: #101513; }
+
+        body.slide-dark-active {
+            background-color: var(--dark-grey);
+        }
+
+        h1, h2, h3 {
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        /* Seamless Navigation Bar */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            z-index: 1000;
+            background: transparent; 
+            border-bottom: none;
+            backdrop-filter: none;
+            transition: color 0.4s var(--ease-organic);
+            transform-style: preserve-3d;
+        }
+        nav.nav-dark {
+            color: white;
+        }
+        nav.nav-light {
+            color: var(--dark-grey);
+        }
+        
+        .logo { 
+            font-weight: 800; 
+            font-size: 1rem; 
+            color: var(--who-blue); 
+            letter-spacing: 0.1em; 
+            transition: transform 0.4s var(--ease-organic), color 0.4s var(--ease-organic);
+            will-change: transform;
+        }
+
+        nav.nav-green-logo .logo {
+            color: var(--markaz-green) !important;
+        }
+
+        @media (hover: hover) {
+            .logo:hover {
+                color: var(--who-blue-dk);
+                transform: scale(1.02) translate3d(2px, 0, 0);
+            }
+        }
+
+        /* Custom Scroll Wrapper */
+        .scroller {
+            height: 100%;
+            width: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+            transform-style: preserve-3d;
+        }
+        .scroller::-webkit-scrollbar { display: none; }
+
+        section {
+            height: 100%;
+            width: 100%;
+            scroll-snap-align: start;
+            scroll-snap-stop: always;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 5.5rem 2rem 2rem; 
+            overflow: hidden;
+            transform-style: preserve-3d;
+            content-visibility: auto;
+            contain-intrinsic-size: 1px 1000px;
+        }
+
+        /* --- TUNED PSYCHOLOGICAL GRADIENTS --- */
+        .bg-slide-1 { background: linear-gradient(135deg, #13171B 0%, #192027 50%, #24282F 100%); }
+        .bg-slide-2 { background: linear-gradient(135deg, #FAF9F5 0%, #F5EDE4 50%, #EDE2D5 100%); } /* Comforting Warm Gradient */
+        .bg-slide-3 { background: linear-gradient(135deg, #F0F4F8 0%, #E1E8F0 50%, #D2DCE6 100%); } /* Cool Blue Precision Gradient */
+        .bg-slide-4 { background: linear-gradient(135deg, #101513 0%, #151C19 50%, #1D2622 100%); }
+        .bg-slide-5 { background: linear-gradient(135deg, #F4F8F5 0%, #E8EFEA 50%, #DBE8DF 100%); } /* Light Warm Green Gradient */
+
+        /* --- TEXT GRADIENTS --- */
+        .text-gradient-light {
+            background: linear-gradient(180deg, #FFFFFF 0%, #E2E8F0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-dark {
+            background: linear-gradient(180deg, #1C1E21 0%, #373F47 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .text-gradient-coral {
+            background: linear-gradient(180deg, #D85A30 0%, #B84720 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* --- STABLE COLOR INHERITANCE --- */
+        .slide-dark {
+            background-color: var(--dark-grey);
+            color: var(--off-white);
+        }
+        .slide-dark p {
+            color: rgba(248, 247, 242, 0.85);
+            transition: color 0.4s var(--ease-organic);
+        }
+
+        .slide-light {
+            background-color: var(--off-white);
+            color: var(--dark-grey);
+        }
+        .slide-light p {
+            color: var(--dark-grey);
+            transition: color 0.4s var(--ease-organic);
+        }
+
+        /* --- TRANSITIONS & INTERACTION LAYER --- */
+        .content {
+            position: relative;
+            z-index: 10;
+            max-width: 1200px;
+            width: 100%;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        /* Dynamic staggered cascades */
+        .content > .accent-text,
+        .content > .hero-title,
+        .content > p,
+        .content > .card,
+        .content > .tech-grid,
+        .content > .arch-stages,
+        .content > .cta-btn,
+        .content > div > .cta-btn {
+            opacity: 0;
+            transform: translate3d(0, 16px, 0) scale(0.99); 
+            transition: transform var(--transition-speed) var(--ease-organic), opacity var(--transition-speed) var(--ease-organic);
+            will-change: transform, opacity;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            transform-style: preserve-3d;
+        }
+
+        /* Anchored structural titles */
+        .hero-title {
+            font-size: clamp(2.8rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 1.05;
+            letter-spacing: -0.02em;
+            margin-bottom: 1.5rem;
+        }
+        .hero-title span {
+            display: inline-block;
+        }
+
+        /* Seamless staggered triggers with tightly controlled 50ms gaps to prevent sluggishness */
+        section.visible .accent-text   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); transition-delay: 0s; }
+        section.visible .hero-title    { opacity: 1; transform: translate3d(0, 0, 0) scale(1); transition-delay: 0.05s; }
+        section.visible p              { opacity: 1; transform: translate3d(0, 0, 0) scale(1); transition-delay: 0.10s; }
+        section.visible .card          { opacity: 1; transform: translate3d(0, 0, 0) scale(1); transition-delay: 0.15s; }
+        section.visible .tech-grid     { opacity: 1; transform: translate3d(0, 0, 0) scale(1); transition-delay: 0.15s; }
+        section.visible .arch-stages   { opacity: 1; transform: translate3d(0, 0, 0) scale(1); transition-delay: 0.15s; }
+        section.visible .cta-btn       { opacity: 1; transform: translate3d(0, 0, 0) scale(1); transition-delay: 0.20s; }
+        section.visible div > .cta-btn { opacity: 1; transform: translate3d(0, 0, 0) scale(1); transition-delay: 0.20s; }
+
+        .accent-text {
+            color: var(--who-blue);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.3em;
+            margin-bottom: 0.5rem;
+            display: block;
+            font-size: 0.8rem;
+            transition: color 0.4s var(--ease-organic), transform 0.4s var(--ease-organic);
+            will-change: transform;
+        }
+
+        @media (hover: hover) {
+            .accent-text:hover {
+                color: var(--who-blue-dk);
+                transform: translate3d(2px, 0, 0);
+            }
+        }
+
+        /* Solid-Alpha Cards & Stage Boxes */
+        .card {
+            background: var(--card-light-bg);
+            padding: 2.5rem;
+            border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.03);
+            transition: transform 0.4s var(--ease-organic), box-shadow 0.4s var(--ease-organic), border-color 0.4s var(--ease-organic);
+            transform-style: preserve-3d;
+            will-change: transform, box-shadow;
+        }
+        .slide-dark .card {
+            background: var(--card-dark-bg);
+            border-color: rgba(255,255,255,0.05);
+            color: white;
+        }
+
+        @media (hover: hover) {
+            .card:hover {
+                transform: translate3d(0, -4px, 0);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.05);
+                border-color: rgba(0, 158, 219, 0.15);
+            }
+            .slide-dark .card:hover {
+                border-color: rgba(0, 158, 219, 0.25);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.22);
+            }
+        }
+
+        /* Stage Box Base Rules (Ensures structural consistency on Desktop) */
+        .stage-box {
+            text-align: center;
+            padding: 2.2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .stage-box h3 {
+            font-size: 1.4rem;
+            margin-bottom: 0.5rem;
+            transition: color 0.4s var(--ease-organic);
+        }
+        .stage-box p {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            opacity: 0.85;
+        }
+        .slide-dark .stage-box h3 {
+            color: #FFFFFF;
+        }
+        .slide-dark .stage-box p {
+            color: rgba(248, 247, 242, 0.85);
+        }
+
+        .stage-num {
+            width: 50px;
+            height: 50px;
+            background: var(--who-blue);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-weight: 800;
+            font-family: 'Space Grotesk';
+            flex-shrink: 0;
+            transition: transform 0.4s var(--ease-organic), background-color 0.4s var(--ease-organic);
+            will-change: transform;
+        }
+
+        @media (hover: hover) {
+            .stage-box:hover {
+                transform: translate3d(0, -5px, 0) scale(1.008);
+                box-shadow: 0 15px 30px rgba(0,0,0,0.06);
+                border-color: rgba(0, 158, 219, 0.2);
+            }
+            .stage-box:hover .stage-num {
+                transform: scale(1.06);
+                background-color: var(--markaz-green);
+            }
+        }
+
+        /* Hero Stats Card */
+        .hero-stats-card {
+            display: flex;
+            gap: 3rem;
+            width: fit-content;
+        }
+        .hero-stats-card > div {
+            transition: transform 0.4s var(--ease-organic);
+            will-change: transform;
+        }
+        .hero-stats-card > div h3 {
+            transition: transform 0.4s var(--ease-organic), color 0.4s var(--ease-organic);
+        }
+
+        @media (hover: hover) {
+            .hero-stats-card > div:hover {
+                transform: translate3d(0, -3px, 0) scale(1.015);
+            }
+        }
+
+        /* Responsive Text highlights */
+        .problem-highlight {
+            font-size: 1.3rem; 
+            margin-bottom: 1rem; 
+            color: var(--coral-problem); 
+            font-weight: 600;
+        }
+
+        /* Technical Grid (Layout-Neutral Transitioning) */
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        .tech-item {
+            position: relative;
+            padding: 1.5rem 1.5rem 1.5rem 1.8rem;
+            background: rgba(0,158,219,0.03);
+            border-radius: 0 8px 8px 0;
+            overflow: hidden;
+            transition: transform 0.4s var(--ease-organic), background-color 0.4s var(--ease-organic), box-shadow 0.4s var(--ease-organic);
+            will-change: transform, background-color;
+        }
+        /* Layout-neutral inward expanding border replacement */
+        .tech-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--accent-color, var(--who-blue));
+            transition: width 0.3s var(--ease-organic);
+            will-change: width;
+        }
+        .tech-item h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--accent-color, var(--who-blue)); }
+        .tech-item p { font-size: 0.95rem; opacity: 0.8; }
+
+        @media (hover: hover) {
+            .tech-item:hover {
+                transform: translate3d(4px, 0, 0) scale(1.005);
+                background-color: rgba(0, 158, 219, 0.06);
+            }
+            .tech-item:hover::before {
+                width: 6px;
+            }
+        }
+
+        /* Architecture Stages Grid */
+        .arch-stages {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Developer Grid Architecture */
+        .dev-card {
+            text-align: left;
+            padding: 2.2rem;
+            background: rgba(0,0,0,0.20);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            transition: transform 0.45s var(--ease-organic), box-shadow 0.45s var(--ease-organic), border-color 0.45s var(--ease-organic);
+            will-change: transform, box-shadow;
+        }
+        .dev-card h3 {
+            color: var(--off-white);
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 0.25rem;
+            transition: color 0.4s var(--ease-organic);
+        }
+        .dev-card p {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            margin-bottom: 0.25rem;
+        }
+        .dev-card a {
+            color: var(--who-blue);
+            text-decoration: none;
+            transition: color 0.3s var(--ease-organic);
+        }
+        .dev-card a:hover {
+            color: var(--who-blue-dk);
+        }
+
+        @media (hover: hover) {
+            .dev-card:hover {
+                transform: translate3d(0, -5px, 0);
+                box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+                border-color: rgba(0, 158, 219, 0.25);
+            }
+            .dev-card:hover h3 {
+                color: var(--who-blue);
+            }
+        }
+
+        /* Navigation Progress Dots */
+        .progress-nav {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            z-index: 100;
+        }
+        .dot { 
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%; 
+            background: rgba(0,0,0,0.15); 
+            cursor: pointer; 
+            transition: all 0.4s var(--ease-organic); 
+        }
+        .dot.active { 
+            background: var(--who-blue); 
+            height: 24px; 
+            border-radius: 4px;
+        }
+        
+        @media (hover: hover) {
+            .dot:hover {
+                background: var(--who-blue);
+                transform: scale(1.3);
+            }
+        }
+        
+        body.slide-dark-active .dot {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        body.slide-dark-active .dot.active {
+            background: var(--who-blue);
+        }
+
+        /* CTA Button */
+        .cta-btn {
+            display: inline-block;
+            padding: 1rem 2.5rem;
+            background: linear-gradient(135deg, var(--who-blue) 0%, var(--who-blue-dk) 100%);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            box-shadow: 0 4px 15px rgba(0, 158, 219, 0.15);
+            transition: transform 0.4s var(--ease-organic), box-shadow 0.4s var(--ease-organic);
+            margin-top: 1.5rem;
+            will-change: transform;
+        }
+
+        @media (hover: hover) {
+            .cta-btn:hover {
+                transform: translate3d(0, -3px, 0) scale(1.015);
+                box-shadow: 0 8px 25px rgba(0, 158, 219, 0.35);
+            }
+        }
+
+        /* --- PHONE COMPATIBILITY OVERRIDES --- */
+        @media (max-width: 768px) {
+            nav {
+                padding: 1.2rem 1.2rem;
+                background: transparent;
+            }
+            .logo {
+                font-size: 0.9rem;
+            }
+            section {
+                padding: 4.5rem 1.2rem 1.5rem;
+            }
+            .content {
+                max-width: calc(100% - 1.2rem); 
+            }
+            
+            .hero-title {
+                font-size: clamp(2.3rem, 10vw, 3.4rem); 
+                line-height: 0.95; 
+                letter-spacing: -0.04em;
+                margin-bottom: 1.2rem;
+            }
+            .card {
+                padding: 1.5rem;
+                border-radius: 15px;
+            }
+
+            .hero-stats-card {
+                width: 100% !important;
+                gap: 1rem !important;
+                justify-content: space-between;
+                padding: 1.2rem 1rem !important;
+            }
+            .hero-stats-card > div {
+                text-align: center;
+                flex: 1;
+            }
+            .hero-stats-card h3 {
+                font-size: 1.3rem !important;
+            }
+            .hero-stats-card p {
+                font-size: 0.6rem !important;
+            }
+
+            .problem-highlight {
+                font-size: 1.1rem;
+            }
+
+            .tech-grid {
+                grid-template-columns: 1fr;
+                gap: 0.6rem;
+                margin-top: 1rem;
+            }
+            .tech-item {
+                padding: 0.8rem 1rem 0.8rem 1.2rem;
+            }
+            .tech-item h3 {
+                font-size: 1.05rem;
+                margin-bottom: 0.2rem;
+            }
+            .tech-item p {
+                font-size: 0.8rem;
+            }
+
+            .arch-stages {
+                grid-template-columns: 1fr;
+                gap: 0.6rem;
+                margin-top: 1rem;
+            }
+
+            /* Responsive layout adjustments for mobile cards (horizontal flow) */
+            .stage-box {
+                flex-direction: row;
+                text-align: left;
+                padding: 1rem 1.2rem;
+                align-items: center;
+                gap: 1.2rem;
+            }
+            .stage-num {
+                margin-bottom: 0; /* Fully overrides margin on mobile row */
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            .stage-body {
+                flex: 1;
+            }
+            .stage-box h3 {
+                font-size: 1.05rem;
+                margin-bottom: 0.2rem;
+            }
+            .stage-box p {
+                margin-top: 0.2rem;
+                font-size: 0.78rem;
+                line-height: 1.4;
+            }
+
+            .dev-card {
+                padding: 0.8rem 1rem;
+                border-radius: 12px;
+                gap: 0.2rem;
+            }
+            .dev-card h3 {
+                font-size: 1.1rem;
+                margin-bottom: 0.1rem;
+            }
+            .dev-card p {
+                font-size: 0.75rem;
+                margin-bottom: 0.1rem;
+            }
+
+            .progress-nav {
+                right: 0.8rem;
+                gap: 0.8rem;
+            }
+            .dot {
+                width: 6px;
+                height: 6px;
+            }
+            .cta-btn {
+                padding: 0.8rem 2rem;
+                font-size: 0.9rem;
+                margin-top: 1rem;
+            }
+        }
+
+        @media (max-height: 660px) {
+            section {
+                padding-top: 4rem;
+                padding-bottom: 1rem;
+            }
+            .hero-title {
+                font-size: clamp(1.8rem, 7vh, 2.4rem);
+                line-height: 1.05;
+                margin-bottom: 0.5rem;
+            }
+            .card {
+                padding: 1rem;
+            }
+            .tech-grid {
+                gap: 0.4rem;
+            }
+            .tech-item {
+                padding: 0.5rem 0.8rem;
+            }
+            .arch-stages {
+                gap: 0.4rem;
+            }
+            .stage-box {
+                padding: 0.6rem 1rem;
+            }
+            .dev-card {
+                padding: 0.8rem 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav id="main-nav">
+        <div class="logo">SILENT GUARDIAN</div>
+    </nav>
+
+    <div class="progress-nav" id="dots-container">
+        <div class="dot active" onclick="scrollToSection(0)"></div>
+        <div class="dot" onclick="scrollToSection(1)"></div>
+        <div class="dot" onclick="scrollToSection(2)"></div>
+        <div class="dot" onclick="scrollToSection(3)"></div>
+        <div class="dot" onclick="scrollToSection(4)"></div>
+        <div class="dot" onclick="scrollToSection(5)"></div>
+        <div class="dot" onclick="scrollToSection(6)"></div>
+    </div>
+
+    <div class="scroller" id="scroller">
+        
+        <!-- Page 1: Hero -->
+        <section class="slide-dark bg-slide-1" id="slide-0">
+            <div class="content">
+                <h1 class="hero-title">
+                    <span class="text-gradient-light">Silent Guardian:</span><br>
+                    <span style="color: var(--who-blue);">Silence the Fear,</span><br>
+                    <span style="color: var(--who-blue);">Empower the Life.</span>
+                </h1>
+                <p style="font-size: clamp(0.95rem, 2vw, 1.2rem); max-width: 600px; margin-bottom: 2rem; opacity: 0.9;">World's first open-access seizure detection ecosystem. Providing life-saving seizure detection with $0 monthly fees and local, on-device intelligence.</p>
+                <div class="card hero-stats-card">
+                    <div><h3 style="color: var(--amber-stat); font-size: 1.8rem;">50M+</h3><p style="font-size: 0.7rem; text-transform: uppercase;">Lives Impacted</p></div>
+                    <div><h3 style="color: var(--who-blue); font-size: 1.8rem;">$0</h3><p style="font-size: 0.7rem; text-transform: uppercase;">Subscription</p></div>
+                    <div><h3 style="color: #10B981; font-size: 1.8rem; font-weight: 800;">100%</h3><p style="font-size: 0.7rem; text-transform: uppercase;">Local & Private</p></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 2: Importance (Warm Psychological Alignment) -->
+        <section class="slide-light bg-slide-2" id="slide-1">
+            <div class="content">
+                <span class="accent-text" style="color: var(--coral-problem);">The Silent Crisis</span>
+                <h2 class="hero-title">
+                    <span class="text-gradient-coral">Undetected,</span><br>
+                    <span class="text-gradient-coral">Unprotected.</span>
+                </h2>
+                <div class="card" style="border-left: 5px solid var(--markaz-green); border-radius: 4px 20px 20px 4px;">
+                    <p class="problem-highlight">In the critical seconds of a seizure, silence is the greatest threat.</p>
+                    <p style="font-size: clamp(0.85rem, 1.8vw, 1rem); opacity: 0.9;">Current monitoring systems are locked behind expensive paywalls and unreliable cloud connections. For the 50 million people living with epilepsy, a missed alert isn't just a technical failure—it's a life-threatening gap. While emergency alerts must utilize standard mobile networks, the life-saving detection algorithm itself must remain entirely local.<br> We are building the alternative: <span style="color: var(--markaz-green); font-weight: 700;">Always active, locally processed, and completely subscription-free.</span></p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 3: Technical Working (Cool Blue Psychological Alignment) -->
+        <section class="slide-light bg-slide-3" id="slide-2">
+            <div class="content">
+                <span class="accent-text">The Engine</span>
+                <h2 class="hero-title">
+                    <span class="text-gradient-dark">Technical</span><br>
+                    <span style="color: var(--who-blue);">Workflow.</span>
+                </h2>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <h3>01. Biometric Capture</h3>
+                        <p>The wearable sensor continuously tracks raw physical motion and heart rate data.</p>
+                    </div>
+                    <div class="tech-item">
+                        <h3>02. Signal Filtering</h3>
+                        <p>The system filters out everyday movement noise to isolate true physiological patterns.</p>
+                    </div>
+                    <div class="tech-item" style="--accent-color: var(--markaz-green);">
+                        <h3>03. On-Device AI</h3>
+                        <p>A local machine learning model processes the data directly on the device to detect seizure signatures.</p>
+                    </div>
+                    <div class="tech-item" style="--accent-color: var(--markaz-green);">
+                        <h3>04. Alert Dispatch</h3>
+                        <p>If a seizure is detected, the system instantly sounds a local alarm, notifies caretakers, and dispatches emergency SMS and SOS alerts as a fallback if any system anomalies occur.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 4: Ecosystem -->
+        <section class="slide-dark bg-slide-4" id="slide-3">
+            <div class="content">
+                <span class="accent-text" style="color: var(--who-blue);">Sustainable Framework</span>
+                <h2 class="hero-title">
+                    <span class="text-gradient-light">Open Source.</span><br>
+                    <span style="color: var(--who-blue);">Commercial Hardware.</span>
+                </h2>
+                <div class="arch-stages">
+                    <div class="card stage-box">
+                        <div class="stage-num">1</div>
+                        <div class="stage-body">
+                            <h3>Unlocked Software</h3>
+                            <p>All of our companion apps, machine learning models, and software updates are entirely free, open-source, and free of paywalls.</p>
+                        </div>
+                    </div>
+                    <div class="card stage-box">
+                        <div class="stage-num">2</div>
+                        <div class="stage-body">
+                            <h3>Pre-Assembled Wearables</h3>
+                            <p>We monetize by manufacturing and selling premium, certified wearables for individuals and clinics wanting a ready-to-use solution.</p>
+                        </div>
+                    </div>
+                    <div class="card stage-box">
+                        <div class="stage-num">3</div>
+                        <div class="stage-body">
+                            <h3>Open Blueprints</h3>
+                            <p>We publish our complete physical schematics. Developers and researchers can build their own device from raw components for free.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 5: Device Details (Fully Responsive Layout with Zero Specificity Conflicts) -->
+        <section class="slide-dark bg-slide-1" id="slide-4">
+            <div class="content">
+                <span class="accent-text" style="color: var(--who-blue);">System Hardware</span>
+                <h2 class="hero-title">
+                    <span class="text-gradient-light">Two Devices.</span><br>
+                    <span style="color: var(--who-blue);">One Local System.</span>
+                </h2>
+                <div class="tech-grid" style="margin-top: 2rem;">
+                    <div class="card stage-box" style="background: var(--card-dark-bg); border: 1px solid rgba(255,255,255,0.05);">
+                        <div class="stage-num" style="background: var(--who-blue);">1</div>
+                        <div class="stage-body">
+                            <h3>The Wearable Sensor</h3>
+                            <p>Continuous on-body physiological tracking. The compact, low-power, durable wearable band captures physical acceleration and heart rate metrics, performing real-time filtering directly on-device before wireless streaming.</p>
+                        </div>
+                    </div>
+                    <div class="card stage-box" style="background: var(--card-dark-bg); border: 1px solid rgba(255,255,255,0.05);">
+                        <div class="stage-num" style="background: var(--who-blue);">2</div>
+                        <div class="stage-body">
+                            <h3>The Local Processing Dock</h3>
+                            <p>The physical local AI engine. Receives pre-filtered telemetry data wirelessly from the band. It processes advanced machine learning classifiers completely offline to trigger immediate alarms, notifying caretakers and remote SMS and sos alerts.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 6: Closing (Light Warm Green Alignment) -->
+        <section class="slide-light bg-slide-5" id="slide-5" style="text-align: center;">
+            <div class="content">
+                <span class="accent-text">Get Started</span>
+                <h2 class="hero-title">
+                    <span class="text-gradient-dark">Build or</span><br>
+                    <span style="color: var(--primary-green);">Order Today.</span>
+                </h2>
+                <p style="max-width: 600px; margin: 0 auto; font-size: clamp(0.9rem, 1.8vw, 1.1rem); opacity: 0.9;">Access our fully unlocked software ecosystem. Order our premium pre-assembled hardware for instant, out-of-the-box protection, or access our open repository to build your own device.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; flex-wrap: wrap;">
+                    <a href="#slide-3" class="cta-btn" onclick="scrollToSection(3); return false;">Explore the Store & Repositories</a>
+                    <a href="https://github.com/godwin-binoy/ozone" target="_blank" class="cta-btn" style="background: var(--dark-grey); color: white;">View GitHub Repository</a>
+                </div>
+            </div>
+        </section>
+
+        <!-- Page 7: Footer & Contact Details -->
+        <section class="slide-dark bg-slide-4" id="slide-6">
+            <div class="content" style="display: flex; flex-direction: column; justify-content: center; min-height: 80%;">
+                <div>
+                    <span class="accent-text" style="color: var(--who-blue);">Contact Us</span>
+                    <h2 class="hero-title">
+                        <span class="text-gradient-light">Meet the</span><br>
+                        <span style="color: var(--who-blue);">Developers.</span>
+                    </h2>
+                </div>
+                
+                <div class="tech-grid" style="margin-top: 1.5rem; margin-bottom: 1.5rem;">
+                    <!-- Developer 1 Card -->
+                    <div class="card dev-card">
+                        <h3>Aahil Muhammed</h3>
+                        <p style="opacity: 0.85; margin-bottom: 0.5rem;">Team leader, Core Systems and Embedded</p>
+                        <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.2rem;">
+                            <strong>GitHub:</strong> <a href="https://github.com/mrprince0000" target="_blank">@mrprince0000</a>
+                        </p>
+                        <p style="font-size: 0.8rem; opacity: 0.7;">
+                            <strong>Email:</strong> <a href="mailto:aahilmuhammed27@gmail.com">aahilmuhammed27@gmail.com</a>
+                        </p>
+                    </div>
+                    
+                    <!-- Developer 2 Card -->
+                    <div class="card dev-card">
+                        <h3>Godwin Binoy</h3>
+                        <p style="opacity: 0.85; margin-bottom: 0.5rem;">Software and algorithms</p>
+                        <p style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.2rem;">
+                            <strong>GitHub:</strong> <a href="https://github.com/godwin-binoy" target="_blank">@godwin-binoy</a>
+                        </p>
+                        <p style="font-size: 0.8rem; opacity: 0.7;">
+                            <strong>Email:</strong> <a href="mailto:godwinbinoy72@gmail.com">godwinbinoy72@gmail.com</a>
+                        </p>
+                    </div>
+                    
+                    <!-- Developer 3 Card -->
+                    <div class="card dev-card">
+                        <h3>Sreehari Sunil</h3>
+                        <p style="opacity: 0.85; margin-bottom: 0.5rem;">Concept design and presentations</p>
+                        <p style="font-size: 0.8rem; opacity: 0.7;">
+                            <strong>Email:</strong> <a href="mailto:sreeharisunil723@gmail.com">sreeharisunil723@gmail.com</a>
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Footer Bottom Note (Reordered Disclaimer Below Copyright) -->
+                <div style="border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; width: 100%; text-align: center;">
+                    <p style="font-size: 0.75rem; opacity: 0.5; margin-bottom: 0.6rem;">&copy; 2026 Silent Guardian. All Rights Reserved. Open Source licensed under the PolyForm Noncommercial License 1.0.0.</p>
+                    <p style="font-size: 0.7rem; opacity: 0.45; max-width: 900px; margin: 0 auto; line-height: 1.4;">
+                        Disclaimer: Silent Guardian is an open-access monitoring aid and does not constitute or replace professional medical advice, clinical diagnosis, or emergency dispatch services.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        const scroller = document.getElementById('scroller');
+        const sections = document.querySelectorAll('section');
+        const dots = document.querySelectorAll('.dot');
+        const nav = document.getElementById('main-nav');
+
+        // Observer with dynamic CSS class changes, optimizing performance and resolving shutter
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    const index = Array.from(sections).indexOf(entry.target);
+                    updateDots(index);
+                    
+                    // Reset body classes and assign active-slide class to keep background synchronized
+                    document.body.className = '';
+                    document.body.classList.add(`active-slide-${index + 1}`);
+
+                    // Toggle nav elements dynamically without style writes to protect render pipe
+                    nav.classList.remove('nav-dark', 'nav-light', 'nav-green-logo');
+                    if (entry.target.classList.contains('slide-dark')) {
+                        nav.classList.add('nav-dark');
+                        document.body.classList.add('slide-dark-active');
+                    } else {
+                        nav.classList.add('nav-light');
+                        document.body.classList.remove('slide-dark-active');
+                    }
+
+                    // Dynamic logo green state transition strictly on the second slide (index 1)
+                    if (index === 1) {
+                        nav.classList.add('nav-green-logo');
+                    }
+                }
+            });
+        }, { threshold: 0.12 }); // Trigger threshold lowered to 12% to completely eliminate dynamic load latency
+
+        sections.forEach(section => observer.observe(section));
+
+        function updateDots(index) {
+            dots.forEach((dot, i) => dot.classList.toggle('active', i === index));
+        }
+
+        function scrollToSection(index) {
+            sections[index].scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
